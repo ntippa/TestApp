@@ -1,27 +1,21 @@
 package com.ntippa.myflickrfindr.ui.gallery;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
-import androidx.navigation.NavHostController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.paging.LoadState;
-import androidx.paging.PagingDataAdapter;
 
 import com.ntippa.myflickrfindr.R;
 import com.ntippa.myflickrfindr.databinding.FragmentGalleryBinding;
@@ -38,7 +32,7 @@ public class GalleryFragment extends Fragment implements FlickrPhotosAdapter.OnI
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        binding = FragmentGalleryBinding.inflate( inflater, container, false);
+        binding = FragmentGalleryBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         return view;
     }
@@ -47,18 +41,37 @@ public class GalleryFragment extends Fragment implements FlickrPhotosAdapter.OnI
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(requireActivity()).get(GalleryViewModel.class);
+        viewModel = new ViewModelProvider(this).get(GalleryViewModel.class);
 
         FlickrPhotosAdapter adapter = new FlickrPhotosAdapter(new FlickrPhotosAdapter.PhotoItemDiff(), this);
-       // FlickrPhotosAdapter adapter = new FlickrPhotosAdapter(new FlickrPhotosAdapter.PhotoItemDiff());
         binding.recyclerView.setAdapter(adapter);
 
 
-        if(viewModel != null ) {
-            viewModel.searchPhotos("dogs").observe(getViewLifecycleOwner(), photos -> {
-                    adapter.submitData(getViewLifecycleOwner().getLifecycle(), photos);
-                });
+        if (viewModel != null) {
+            viewModel.photos.observe(getViewLifecycleOwner(), photos -> {
+                adapter.submitData(getViewLifecycleOwner().getLifecycle(), photos);
+            });
+        }
+
+        adapter.addLoadStateListener(loadState -> {
+
+           if (loadState.getSource().getRefresh() instanceof LoadState.Loading)
+               binding.progressBar.setVisibility(View.VISIBLE);
+            else binding.progressBar.setVisibility(View.INVISIBLE);
+
+            if(loadState.getSource().getRefresh() instanceof LoadState.Error)
+                binding.textViewError.setVisibility(View.VISIBLE);
+
+            if(loadState.getSource().getRefresh() instanceof LoadState.NotLoading &&
+            loadState.getAppend().getEndOfPaginationReached() && adapter.getItemCount() < 1){
+                binding.recyclerView.setVisibility(View.INVISIBLE);
+                binding.textViewEmpty.setVisibility(View.VISIBLE);
+            } else {
+                binding.textViewEmpty.setVisibility(View.INVISIBLE);
             }
+
+            return null;
+        });
 
         setHasOptionsMenu(true);
     }
@@ -71,22 +84,23 @@ public class GalleryFragment extends Fragment implements FlickrPhotosAdapter.OnI
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
 
-       searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-           @Override
-           public boolean onQueryTextSubmit(String query) {
-               if(query != null){
-                   binding.recyclerView.scrollToPosition(0);
-                   viewModel.searchPhotos(query);
-                   searchView.clearFocus();
-               }
-               return true;
-           }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                if (query != null) {
+                    binding.recyclerView.scrollToPosition(0);
+                    //viewModel.searchPhotos(query);
+                    viewModel.setQuery(query);
+                    searchView.clearFocus();
+                }
+                return true;
+            }
 
-           @Override
-           public boolean onQueryTextChange(String newText) {
-               return true;
-           }
-       });
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -97,9 +111,7 @@ public class GalleryFragment extends Fragment implements FlickrPhotosAdapter.OnI
 
     @Override
     public void onItemClick(PhotoResponse photo) {
-        Log.d("GalleryFragment","ItemClicked");
         NavController navController = NavHostFragment.findNavController(this);
         navController.navigate(GalleryFragmentDirections.actionGalleryFragmentToDetailFragment(photo));
-Toast.makeText(getContext(), "Item Clicked" , Toast.LENGTH_LONG).show();
     }
 }

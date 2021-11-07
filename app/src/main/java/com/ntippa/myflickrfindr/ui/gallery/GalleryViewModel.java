@@ -1,7 +1,5 @@
 package com.ntippa.myflickrfindr.ui.gallery;
 
-import androidx.annotation.NonNull;
-import androidx.hilt.Assisted;
 import androidx.hilt.lifecycle.ViewModelInject;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,19 +9,22 @@ import androidx.lifecycle.ViewModel;
 import androidx.paging.PagingData;
 
 import com.ntippa.myflickrfindr.data.FlickrFindrRepository;
-import com.ntippa.myflickrfindr.data.PhotoEntity;
 import com.ntippa.myflickrfindr.network.PhotoResponse;
-
-import java.util.List;
 
 public class GalleryViewModel extends ViewModel {
 
+    private SavedStateHandle state;
     private FlickrFindrRepository repository;
-    public LiveData<PagingData<PhotoResponse>> photos;
-
     private static final String DEFAULT_QUERY = "flowers";
+    private static final String CURRENT_QUERY = "query";
 
-    MutableLiveData<String> currentQuery = new MutableLiveData(DEFAULT_QUERY);
+    private MutableLiveData<String> currentQuery = new MutableLiveData(DEFAULT_QUERY);
+
+
+    public LiveData<PagingData<PhotoResponse>> photos =
+            Transformations.switchMap(currentQuery,currentQuery -> repository.getSearchResults(currentQuery));
+
+
 
     @ViewModelInject
     public GalleryViewModel(
@@ -31,10 +32,15 @@ public class GalleryViewModel extends ViewModel {
         this.repository = repository;
     }
 
-    public LiveData<PagingData<PhotoResponse>> searchPhotos(String query){
-        this.currentQuery.setValue(query);
-        return Transformations.switchMap(currentQuery,currentQuery -> repository.getSearchResults(currentQuery));
+//    public LiveData<PagingData<PhotoResponse>> searchPhotos(String query){
+//        setQuery(query);
+//        return Transformations.switchMap(currentQuery,currentQuery -> repository.getSearchResults(currentQuery));
+//
+//    }
 
+    void setQuery(String query){
+        this.currentQuery.setValue(query);
     }
+
 
 }
