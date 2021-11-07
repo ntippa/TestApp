@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/grid_item"
+    tools:layout_height="300dp"
+    android:background="@color/teal_200"
+    tools:context=".ui.detail.DetailFragment">
+
+    <ImageView
+        android:id="@+id/imageview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:scaleType="centerCrop"
+        app:layout_constraintDimensionRatio="4:3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="142dp"
+        tools:layout_height="200dp"
+        tools:src="@drawable/ic_launcher_background" />
+
+    <TextView
+        android:id="@+id/textview_species"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/text_item_padding"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceHeadline4"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/textview_description"
+        app:layout_constraintEnd_toEndOf="@+id/imageview"
+        app:layout_constraintStart_toStartOf="@+id/imageview"
+        app:layout_constraintTop_toBottomOf="@+id/imageview"
+        tools:text="Species" />
+
+    <TextView
+        android:id="@+id/textview_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingHorizontal="@dimen/text_item_padding"
+        android:paddingBottom="@dimen/text_item_padding"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/imageview"
+        app:layout_constraintStart_toStartOf="@+id/imageview"
+        app:layout_constraintTop_toBottomOf="@+id/textview_species"
+        tools:text="Here is the description" />
+
+
+<!--    <ProgressBar-->
+<!--        android:id="@+id/progressbar"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="center"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent" />-->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
