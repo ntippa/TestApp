@@ -20,4 +20,5 @@ Functional Requirements:  This app
 • Provides ability to search for another term .
 
 
+![image](https://user-images.githubusercontent.com/8468810/140687405-db874df7-f5b2-4798-88e8-eb0fd2da134d.png)
 
